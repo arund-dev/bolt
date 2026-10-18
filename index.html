@@ -12,10 +12,10 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg) var(--pat);background-size:14px 14px;color:var(--tx);font:600 15px var(--bf)}
 .wrap{max-width:480px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0px)) 16px 130px}
 .hf,h2,.btn,.cap,.chip,nav button,.seg button{font-family:var(--hf);font-weight:400;letter-spacing:.03em}
-h2{font-size:36px;margin:0 0 18px;rotate:calc(var(--t)*-1deg)}
+h2{font-size:36px;margin:0 0 18px;rotate:calc(var(--t)*-.5deg)}
 .panel{background:var(--card);border:var(--bw) solid var(--ln);border-radius:var(--rd);box-shadow:var(--sh) var(--sh) 0 var(--ln);padding:18px 16px 16px;margin:0 0 24px;position:relative;rotate:calc(var(--r,0)*var(--t)*1deg)}
 .panel:nth-child(even){border-radius:14px 225px 14px 255px/225px 14px 255px 14px}
-.cap{position:absolute;top:-15px;left:12px;background:var(--ac2);border:var(--bw) solid var(--ln);border-radius:5px;padding:0 10px;font-size:17px;rotate:calc(var(--t)*-2deg)}
+.cap{position:absolute;top:-15px;left:12px;background:var(--ac2);border:var(--bw) solid var(--ln);border-radius:5px;padding:0 10px;font-size:17px;rotate:calc(var(--t)*-.8deg)}
 .chip{display:inline-block;border:var(--bw) solid var(--ln);border-radius:5px;padding:0 8px;font-size:15px;margin:6px 6px 0 0;background:var(--ac3);rotate:calc(var(--r,0)*var(--t)*1deg)}
 .btn{font-size:18px;background:var(--ac2);color:var(--tx);border:var(--bw) solid var(--ln);border-radius:8px 14px 9px 12px;box-shadow:var(--sh) var(--sh) 0 var(--ln);padding:8px 14px;cursor:pointer;rotate:calc(var(--r,0)*var(--t)*1deg)}
 .btn:active{translate:2px 2px;box-shadow:none}.btn.p{background:var(--ac);color:var(--on)}.btn.g{background:var(--card)}.wide{width:100%;margin-bottom:24px}
@@ -32,6 +32,8 @@ select,input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--c
 .pips{display:flex;gap:5px;margin:4px 0 10px}.pips i{width:20px;height:20px;border:2px solid var(--ln);border-radius:4px}.pips .f{background:var(--ac3)}
 .days{display:flex;gap:4px;margin:8px 0}.days .btn{flex:1;padding:6px 0;font-size:15px;box-shadow:none}.days .on{background:var(--ac);color:var(--on)}
 .avatar{display:grid;place-items:center;width:96px;height:96px;border-radius:50%;overflow:hidden;border:var(--bw) solid var(--ln);font-size:46px;margin-bottom:10px}.avatar img{width:100%;height:100%;object-fit:cover}
+.ccr{display:flex;gap:12px;align-items:center}.ccr svg{flex:none}.qq{margin-top:12px;padding-top:10px;border-top:2px dashed var(--ln)}
+.wv{animation:wv 2.4s linear infinite}@keyframes wv{to{transform:translateX(40px)}}@media(prefers-reduced-motion:reduce){.wv{animation:none}}
 nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:auto;display:grid;grid-template-columns:1fr 1fr 80px 1fr 1fr;background:var(--bg);border-top:var(--bw) solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
 nav button{background:none;border:0;color:var(--tx);font-size:18px;padding:16px 0 12px}nav .on{box-shadow:inset 0 -4px 0 var(--ac)}
 #homeBtn{position:fixed;left:50%;translate:-50% 0;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:74px;height:74px;border-radius:50%;background:var(--ac);color:var(--on);border:var(--bw) solid var(--ln);font-size:32px;z-index:11}
@@ -46,7 +48,7 @@ nav button{background:none;border:0;color:var(--tx);font-size:18px;padding:16px 
 <div id="login"><div class="panel" style="width:100%;max-width:360px"><h2>Lock In</h2><input id="em" type="email" placeholder="email" autocomplete="username"><input id="pw" type="password" placeholder="password" autocomplete="current-password"><small id="lerr"></small><div class="row"><button class="btn g" id="skip">OFFLINE</button><button class="btn p" id="li">ENTER</button></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const SB_URL='https://wobbputochvovpzwpcdr.supabase.co',SB_KEY='sb_publishable_AlPqPnlC28-XTpFXhSRpAA_JI_Jz5IP';
+const SB_URL='YOUR_SUPABASE_URL',SB_KEY='YOUR_SUPABASE_ANON_KEY';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const uid=()=>Math.random().toString(36).slice(2,9),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const iso=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,0)+'-'+String(d.getDate()).padStart(2,0)};
@@ -58,8 +60,8 @@ const DEF={theme:'comic',chapter:'Finding my feet',bio:'',photo:'',
 areas:[{id:'a1',name:'Money'},{id:'a2',name:'Education'},{id:'a3',name:'Life'},{id:'a4',name:'Skills'}],
 types:[{id:'t1',area:'a1',name:'Job hunt',carry:1},{id:'t2',area:'a2',name:'A/L',carry:1},{id:'t3',area:'a2',name:'Coding',carry:1},{id:'t4',area:'a3',name:'Gym',carry:0},{id:'t5',area:'a3',name:'Health',carry:0},{id:'t6',area:'a4',name:'Daily life',carry:1}],
 loop:[L('Job applications','t1',[0,1,2,3,4],'morning'),L('Study coding','t3',[0,1,2,3,4],'afternoon','',2),L('Gym','t4',[0,2,4],'evening','17:00'),L('Cook something new','t6',[5],'afternoon'),L('Tidy my space','t6',[6],'morning',' ',1)],
-items:[],off:[],away:[],water:{},energy:{},log:[],ask:{}};
-let S=JSON.parse(localStorage.getItem('lockin')||'null')||structuredClone(DEF),sb,user,tmr,pg='home',seg='today',msg='',ev=0;
+items:[],off:[],away:[],water:{},energy:{},log:[],ask:{},qa:{},hyd:{lvl:.6,at:Date.now(),nt:0}};
+let S=JSON.parse(localStorage.getItem('lockin')||'null')||structuredClone(DEF),sb,user,tmr,pg='home',seg='today',msg='',ev=0;S.hyd=S.hyd||{lvl:.6,at:Date.now(),nt:0};S.qa=S.qa||{};
 const ty=id=>S.types.find(x=>x.id==id)||{name:'Other',carry:0},free=d=>S.off.includes(d)||S.away.some(a=>d>=a.f&&d<=a.t),theme=()=>document.documentElement.dataset.theme=S.theme||'comic';
 function save(){S.ts=Date.now();localStorage.setItem('lockin',JSON.stringify(S));clearTimeout(tmr);tmr=setTimeout(push,800)}
 async function push(){if(!sb||!user)return;try{const{error}=await sb.from('app_state').upsert({user_id:user.id,data:S,updated_at:new Date().toISOString()});const s=$('#sync');if(s)s.textContent=error?'will retry when online':'synced'}catch(e){}}
@@ -72,16 +74,45 @@ const miss=(x,from)=>ty(x.type).carry?moveNext(x,from):x.st='skip';
 function fix(){const T=iso();for(let k=0;k<8;k++)ensure(addD(T,k));S.items.forEach(x=>{if(x.date<T&&x.st=='todo')miss(x,T)});S.items=S.items.filter(x=>x.date>=addD(T,-120)||x.st=='todo'||x.st=='later');for(let k=0;k<8;k++)ensure(addD(T,k))}
 const commit=()=>{fix();save();draw()};
 function pick(){const T=iso(),l=S.items.filter(i=>i.date==T&&i.st=='todo').sort(cmp);if(!l.length||free(T))return[null,[]];const e=S.energy[T],now=new Date(),m=now.getHours()*60+now.getMinutes();let n=l.find(i=>i.time&&Math.abs(tm(i.time)-m)<=45)||l[0];if(!l.some(i=>i==n&&i.time&&Math.abs(tm(i.time)-m)<=45)){if(e&&e<=2)n=l.reduce((a,b)=>b.size<a.size?b:a);else if(e>=4)n=l.reduce((a,b)=>b.size>a.size?b:a)}return[n,l.filter(x=>x!=n)]}
-function say(){if(msg)return msg;const h=new Date().getHours(),e=S.energy[iso()];if(!e)return h<12?"Morning, love. How's your energy today?":"How's your energy? Tell me and I'll shape the day.";return["Rough one. Smallest thing only, okay?","Low battery. I'll keep it light.","Steady. One thing at a time.","Good energy. Let's use it gently.","You've got spark today. Harder thing first."][e-1]}
+const DR=4*36e5,LOW=.3,SL=h=>h<5?'night':h<11?'morning':h<14?'noon':h<18?'afternoon':h<21?'evening':'night';
+function awake(a,b){let s=0;for(let t=a;t<b;t+=9e5){const h=new Date(t).getHours();if(h>=7&&h<22)s+=Math.min(9e5,b-t)}return s}
+const lvl=()=>{const a=S.hyd.at;return Math.max(0,S.hyd.lvl-awake(a,Math.min(Date.now(),a+1728e5))/DR)},isAwake=()=>{const h=new Date().getHours();return h>=7&&h<22};
+function notify(t,b){if('Notification'in window&&Notification.permission=='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification(t,{body:b,icon:'icon-180.png',tag:'cc'}))}
+function glass(){const w=$('#wt');if(!w)return;const l=lvl();w.style.transform=`translateY(${(1-l)*108}px)`;$('#wp').textContent=Math.round(l*100)+'%';$('#gsv').style.setProperty('--wc',l<LOW?'#d98a7a':'#7fb7c9');$('#wn').textContent=l<LOW?'Running low. Sip something.':l<.6?'Getting there. A few sips soon.':'Nicely topped up.'}
+function chk(){if(!isAwake()||lvl()>=LOW||Date.now()-S.hyd.nt<36e5)return;S.hyd.nt=Date.now();save();notify('Cee Cee','Your glass is running low, love. Take a few sips?')}
+const OPEN={morning:["Good morning, love.","Morning, you. Sun's up, so are we.","There you are. Morning."],noon:["Midday, love.","Halfway through the day already."],afternoon:["Hey, you.","Afternoon. Still with me?"],evening:["Evening, love.","You made it to the evening."],night:["It's late, love.","Quiet hour. Just us."]};
+const EL=["Rough one. Smallest thing only, okay?","Low battery, so I lightened things.","Steady is fine. One thing at a time.","Good energy. Let's use it gently.","You've got spark. Hardest thing first."];
+const Q={morning:{q:"Did you sleep okay?",a:[["Like a rock",{e:1,r:"Then let's make it count, gently."}],["Okay-ish",{r:"Okay-ish is enough. We'll go steady."}],["Barely",{e:-2,light:1,r:"Oh, love. Small things only today. I lightened it."}]]},
+noon:{q:"Have you eaten something?",a:[["Yes",{r:"Good. Fuel first, always."}],["Not yet",{add:"Eat something proper",r:"Food first. I put it right at the top."}],["Just snacks",{add:"Eat a real meal",r:"Snacks don't count, you. Meal's up next."}]]},
+afternoon:{q:"How's the day going?",a:[["Good",{e:1,r:"Love that. Ride it."}],["Slow",{r:"Slow still moves. Just start the next small bit."}],["Rough",{e:-1,light:1,r:"Okay. Rough days get a smaller list. I took care of it."}]]},
+evening:{q:"How much is left in you?",a:[["Plenty",{e:1,r:"Then one more good thing, and we're done."}],["A little",{r:"A little is fine. One more, then rest."}],["Empty",{e:-2,light:1,r:"Then we stop pushing. I moved the rest forward."}]]},
+night:{q:"Ready to wind down?",a:[["Yes",{r:"Goodnight, love. You did enough today."}],["Soon",{r:"Soon. Screen down in a bit, okay?"}],["Can't switch off",{add:"Write tomorrow's first move",r:"Let's park it on paper. One line, then rest."}]]}};
+const slotKey=()=>iso()+'|'+SL(new Date().getHours());
+function say(){if(msg)return msg;const now=new Date(),h=now.getHours(),m=h*60+now.getMinutes(),T=iso(),up=S.items.filter(i=>i.date==T&&i.st=='todo'&&i.time&&tm(i.time)>m&&tm(i.time)-m<=30).sort(cmp)[0];
+if(up)return`${up.title} is at ${up.time}, in ${tm(up.time)-m} min. Get ready, love.`;
+if(isAwake()&&lvl()<LOW)return"Your glass is nearly empty. Sip first, then the next thing.";
+const qa=S.qa[slotKey()];if(qa)return qa.r;const e=S.energy[T],o=OPEN[SL(h)];return o[(now.getDate()+h)%o.length]+' '+(e?EL[e-1]:'Tell me how your energy is.')}
+function answer(k){const T=iso(),h=new Date().getHours(),r=Q[SL(h)].a[k][1];
+if(r.e)S.energy[T]=Math.max(1,Math.min(5,(S.energy[T]||3)+r.e));
+if(r.light){const n=pick()[0];S.items.filter(x=>x.date==T&&x.st=='todo'&&!x.time&&x.size>1&&x!=n).forEach(x=>miss(x,addD(T,1)))}
+if(r.add&&!S.items.some(x=>x.date==T&&x.title==r.add&&x.st=='todo')){const ct=(S.types.find(t=>t.name=='Health')||S.types[0]).id,p=h<12?'morning':h<17?'afternoon':h<21?'evening':'night';S.items.push({id:uid(),od:T,date:T,title:r.add,type:ct,part:p,time:String(h).padStart(2,0)+':'+String(new Date().getMinutes()).padStart(2,0),size:1,st:'todo',n:0})}
+S.qa[slotKey()]={i:k,r:r.r}}
+const clk=n=>n.toLocaleDateString([],{weekday:'short'})+' '+n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+function AV(sl,e){const bg={morning:'#f4c27a',noon:'#9ec9d6',afternoon:'#e7a36a',evening:'#c987a0',night:'#5a5f9c'}[sl],mo=!e||e==3?'M35 54Q40 57 45 54':e<3?'M35 56Q40 53 45 56':'M34 53Q40 61 46 53',eye=sl=='night'?'<path d="M31 44Q34 46 37 44M43 44Q46 46 49 44" stroke="#1b1b1b" stroke-width="2" fill="none"/>':'<circle cx="34" cy="44" r="2.2" fill="#1b1b1b"/><circle cx="46" cy="44" r="2.2" fill="#1b1b1b"/>';
+return`<svg viewBox="0 0 80 80" width="76" height="76"><circle cx="40" cy="40" r="37" fill="${bg}" style="stroke:var(--ln);stroke-width:3"/><path d="M15 68Q8 22 40 13Q72 22 65 68Z" fill="#1b1b1b"/><ellipse cx="40" cy="44" rx="15" ry="18" fill="#f1d3b8" stroke="#1b1b1b" stroke-width="2.5"/><path d="M24 40Q27 22 42 24Q54 26 56 40Q46 31 24 40Z" fill="#1b1b1b"/>${eye}<circle cx="30" cy="50" r="3" fill="#e58f8f" opacity=".5"/><circle cx="50" cy="50" r="3" fill="#e58f8f" opacity=".5"/><path d="${mo}" stroke="#1b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`}
+function ceeCard(){const now=new Date(),sl=SL(now.getHours()),T=iso(),q=Q[sl];
+return`<div class="panel cc"><span class="cap" id="clk">${clk(now)}</span><div class="ccr">${AV(sl,S.energy[T])}<div><b class="hf">Cee Cee</b><br>${esc(say())}</div></div>${!S.qa[slotKey()]&&!free(T)?`<div class="qq"><b>${q.q}</b><div class="row wrap">${q.a.map((a,i)=>`<button class="btn" data-a="qa" data-i="${i}">${a[0]}</button>`).join('')}</div></div>`:''}</div>`}
+function waterCard(){const l=lvl(),n=S.water[iso()]||0;
+return`<div class="panel"><span class="cap">WATER</span><div class="row" style="align-items:center"><svg id="gsv" viewBox="0 0 84 116" width="96" style="flex:none;--wc:${l<LOW?'#d98a7a':'#7fb7c9'}"><defs><clipPath id="gc"><path d="M5 5H79L71 111H13Z"/></clipPath></defs><g clip-path="url(#gc)"><g id="wt" style="transform:translateY(${(1-l)*108}px);transition:transform 1s cubic-bezier(.3,1.3,.5,1)"><rect x="-10" y="8" width="104" height="130" fill="var(--wc)"/><path class="wv" d="M-30 8q10 -7 20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0" fill="var(--wc)"/></g></g><path d="M5 5H79L71 111H13Z" fill="none" stroke="var(--ln)" stroke-width="4" stroke-linejoin="round"/></svg><div><div class="hf" style="font-size:34px" id="wp">${Math.round(l*100)}%</div><small id="wn"></small><br><small>${n} glass${n==1?'':'es'} today</small></div></div><div class="row"><button class="btn p" data-a="sip">+ GLASS</button>${'Notification'in window&&Notification.permission=='default'?'<button class="btn g" data-a="notif">REMIND ME</button>':''}</div></div>`}
 const moodRow=(a,v)=>`<div class="moods">${ME.map((m,i)=>`<button data-a="${a}" data-i="${i+1}" class="${v==i+1?'on':''}">${m}</button>`).join('')}</div>`;
 function vHome(){const T=iso(),[n,rest]=pick(),h=new Date().getHours(),w=S.water[T]||0,later=S.items.filter(i=>i.st=='later').length,asks=S.items.filter(i=>S.ask[i.id]&&(i.st=='todo'||i.st=='later'));
-return`<div class="ch">CHAPTER · ${esc(S.chapter)}</div><div class="panel bub"><b class="hf">Cee Cee</b><br>${esc(say())}</div>
+return`<div class="ch">CHAPTER · ${esc(S.chapter)}</div>${ceeCard()}
 ${free(T)?'<div class="panel"><span class="cap">TODAY</span>This day is set aside. Nothing is due. Rest well.</div>':`<div class="panel"><span class="cap">NEXT</span>${n?`<div class="hf nt">${esc(n.title)}</div><span class="chip">${esc(ty(n.type).name)}</span><span class="chip">${n.time||n.part}</span>${n.carried?'<span class="chip">carried over</span>':''}<div class="row"><button class="btn p" data-a="done" data-i="${n.id}">DONE</button><button class="btn" data-a="later" data-i="${n.id}">LATER</button></div>`:'<div class="hf nt">Nothing left.</div>Rest, or add something small in Plan.'}</div>`}
 ${rest.length?`<div class="panel"><span class="cap">COMING UP</span>${rest.slice(0,3).map(i=>`<div class="rw"><span>${esc(i.title)}</span><em>${i.time||i.part}</em></div>`).join('')}</div>`:''}
 ${asks.map(i=>`<div class="panel"><span class="cap">CEE CEE ASKS</span>“${esc(i.title)}” keeps coming back. What do we do with it?<div class="row wrap"><button class="btn" data-a="keep" data-i="${i.id}">KEEP</button><button class="btn" data-a="shrink" data-i="${i.id}">SHRINK</button><button class="btn" data-a="rethink" data-i="${i.id}">RETHINK</button><button class="btn g" data-a="drop" data-i="${i.id}">LET GO</button></div></div>`).join('')}
 ${later&&h>=19?`<div class="panel"><span class="cap">LATER BASKET</span>${later} waiting for a day.<div class="row"><button class="btn" data-a="nav" data-i="later">PLACE THEM</button></div></div>`:''}
 <div class="panel"><span class="cap">ENERGY</span>${moodRow('en',S.energy[T])}</div>
-<div class="panel"><span class="cap">WATER</span><div class="pips">${Array.from({length:8},(_,i)=>`<i class="${i<w?'f':''}"></i>`).join('')}</div><button class="btn" data-a="sip">+ GLASS</button></div>
+${waterCard()}
 ${h>=19&&!S.log.some(l=>l.d==T&&l.k=='Day')?`<div class="panel"><span class="cap">EVENING</span>How did today go?${moodRow('mood',0)}<textarea id="evx" rows="2" placeholder="One line about today (optional)"></textarea><button class="btn p" data-a="evsave">SAVE</button></div>`:''}
 ${free(T)?'':'<button class="btn g wide" data-a="life">Life happened today</button>'}`}
 function vPlan(){const T=iso(),sg=`<div class="seg">${['today','week','areas'].map(s=>`<button class="${seg==s?'on':''}" data-a="seg" data-i="${s}">${s.toUpperCase()}</button>`).join('')}</div>`;
@@ -91,8 +122,8 @@ return sg+S.areas.map(a=>`<div class="panel"><span class="cap">${esc(a.name)}</s
 function vLater(){const l=S.items.filter(i=>i.st=='later');return'<h2>Later</h2>'+(l.map(i=>`<div class="panel"><span class="cap">${esc(ty(i.type).name)}</span>${esc(i.title)} <small>· pushed ${i.n}×</small><div class="row"><input type="date" id="d_${i.id}" min="${iso()}" value="${addD(iso(),1)}"><button class="btn p" data-a="place" data-i="${i.id}">PLACE</button></div><div class="row"><button class="btn" data-a="slot" data-i="${i.id}">NEXT SLOT</button><button class="btn g" data-a="drop" data-i="${i.id}">LET GO</button></div></div>`).join('')||'<div class="panel">The basket is empty.</div>')}
 const vLog=()=>`<h2>The Log</h2><div class="panel"><select id="lk"><option>Note</option><option>Win</option><option>Reminder</option></select><textarea id="lx" rows="2" placeholder="What's on your mind?"></textarea><button class="btn p" data-a="logsave">SAVE</button></div>`+S.log.map(l=>`<div class="panel"><span class="cap">${l.k=='Day'?'DAY '+(ME[l.m-1]||''):esc(l.k)}</span><small>${l.d}</small><br>${esc(l.x||'')}</div>`).join('');
 function vMe(){const w=S.items.filter(i=>i.st=='done'&&i.date>addD(iso(),-7));return`<h2>Me</h2><div class="panel"><span class="cap">MY BOOK</span><label class="avatar">${S.photo?`<img src="${S.photo}">`:'😎'}<input type="file" id="photo" accept="image/*" hidden></label><input id="chap" value="${esc(S.chapter)}" placeholder="Current chapter"><textarea id="bio" rows="3" placeholder="About me">${esc(S.bio)}</textarea></div><div class="panel"><span class="cap">THIS WEEK I…</span>${w.map(i=>`<div>✓ ${esc(i.title)}</div>`).join('')||'<small>Nothing yet. That is fine.</small>'}</div><div class="panel"><span class="cap">LOOK</span><select id="theme">${[['comic','Comic'],['comicdark','Comic dark'],['min','Minimal light'],['mindark','Minimal dark']].map(([v,n])=>`<option value="${v}" ${S.theme==v?'selected':''}>${n}</option>`).join('')}</select><small id="sync">${user?'signed in':'local only'}</small>${user?'<div class="row"><button class="btn g" data-a="out">SIGN OUT</button></div>':''}</div>`}
-function tilt(){$$('.panel,.btn,.chip').forEach(e=>{let h=0;for(const c of e.textContent+e.className)h=(h*31+c.charCodeAt(0))>>>0;e.style.setProperty('--r',((h%41)/10-2)*(e.classList.contains('panel')?.6:1))})}
-function draw(){theme();const n=S.items.filter(i=>i.st=='later').length;$$('.page').forEach(p=>p.classList.toggle('on',p.id==pg));$$('nav button[data-i]').forEach(b=>b.classList.toggle('on',b.dataset.i==pg));$('#nl').textContent='LATER'+(n?' '+n:'');$('#'+pg).innerHTML={home:vHome,plan:vPlan,later:vLater,log:vLog,me:vMe}[pg]();tilt()}
+function tilt(){$$('.panel,.btn,.chip').forEach(e=>{let h=0;for(const c of e.textContent+e.className)h=(h*31+c.charCodeAt(0))>>>0;e.style.setProperty('--r',((h%41)/10-2)*(e.classList.contains('panel')?.25:.45))})}
+function draw(){theme();const n=S.items.filter(i=>i.st=='later').length;$$('.page').forEach(p=>p.classList.toggle('on',p.id==pg));$$('nav button[data-i]').forEach(b=>b.classList.toggle('on',b.dataset.i==pg));$('#nl').textContent='LATER'+(n?' '+n:'');$('#'+pg).innerHTML={home:vHome,plan:vPlan,later:vLater,log:vLog,me:vMe}[pg]();tilt();glass()}
 function sheet(o,mode){const isL=mode=='loop';$('#sb').innerHTML=`<h2 style="font-size:30px">${o.id?'Edit':'New'} ${isL?'loop task':'task'}</h2><input id="f_t" placeholder="What?" value="${esc(o.title||'')}"><select id="f_ty">${S.areas.map(a=>`<optgroup label="${esc(a.name)}">${S.types.filter(t=>t.area==a.id).map(t=>`<option value="${t.id}" ${t.id==o.type?'selected':''}>${esc(t.name)}</option>`).join('')}</optgroup>`).join('')}</select>${isL?`<div class="days">${DN.map((d,i)=>`<button class="btn g ${(o.days||[]).includes(i)?'on':''}" data-d="${i}">${d}</button>`).join('')}</div>`:`<input id="f_d" type="date" value="${o.date||iso()}">`}<div class="row"><select id="f_p">${PARTS.map(p=>`<option ${p==o.part?'selected':''}>${p}</option>`).join('')}</select><input id="f_tm" type="time" value="${(o.time||'').trim()}"><select id="f_s">${[1,2,3].map(n=>`<option value="${n}" ${n==(o.size||2)?'selected':''}>${['small','medium','big'][n-1]}</option>`).join('')}</select></div><div class="row">${o.id?'<button class="btn g" id="f_x">DELETE</button>':''}<button class="btn g" id="f_c">CANCEL</button><button class="btn p" id="f_ok">SAVE</button></div>`;
 $('#modal').classList.add('on');const close=()=>$('#modal').classList.remove('on'),T=iso(),purge=l=>{S.items=S.items.filter(i=>!(i.src==l.id&&i.st=='todo'&&!i.carried&&i.date>=T))};
 $$('.days .btn').forEach(b=>b.onclick=()=>b.classList.toggle('on'));$('#f_c').onclick=close;
@@ -103,11 +134,11 @@ else{v.date=$('#f_d').value||T;if(o.id)Object.assign(o,v);else S.items.push({id:
 function act(a,i,b){const T=iso(),it=S.items.find(x=>x.id==i),ar=S.areas.find(x=>x.id==i),tp=S.types.find(x=>x.id==i);
 switch(a){
 case'nav':pg=i;msg='';scrollTo(0,0);break;
-case'seg':seg=i;break;
+case'seg':seg=i;break;case'qa':msg='';answer(+i);break;case'notif':Notification.requestPermission().then(draw);return;
 case'done':it.st='done';msg=pick1(['Nice. That counts.','One less thing. Breathe.','Good. Small wins are real.']);break;
 case'later':it.st='later';it.n++;if(it.n>=3)S.ask[i]=1;msg='Parked in Later. On to the next.';break;
 case'en':S.energy[T]=+i;msg='';break;
-case'sip':S.water[T]=Math.min(8,(S.water[T]||0)+1);break;
+case'sip':S.hyd={lvl:Math.min(1,lvl()+.5),at:Date.now(),nt:0};S.water[T]=(S.water[T]||0)+1;break;
 case'life':S.off.push(T);S.items.filter(x=>x.date==T&&x.st=='todo').forEach(x=>miss(x,addD(T,1)));msg="Today is yours. I moved things along gently.";break;
 case'keep':it.n=0;delete S.ask[i];break;
 case'shrink':{const t=prompt('Make it smaller. New wording:',it.title);if(t){it.title=t;it.size=1;it.n=0;delete S.ask[i]}break}
@@ -135,7 +166,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)
 document.addEventListener('change',e=>{const i=e.target.id;if(i=='chap')S.chapter=e.target.value;else if(i=='bio')S.bio=e.target.value;else if(i=='theme'){S.theme=e.target.value;theme()}else if(i=='photo'){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=256;const m=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,256,256);S.photo=c.toDataURL('image/jpeg',.8);commit()};im.src=r.result};r.readAsDataURL(f);return}else return;save()});
 $('#li').onclick=async()=>{const{data,error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#pw').value});if(error)return $('#lerr').textContent=error.message;user=data.user;$('#login').classList.remove('on');try{await pull()}catch(e){}commit()};
 $('#skip').onclick=()=>$('#login').classList.remove('on');
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)commit()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){commit();chk()}});
+let lastSl=SL(new Date().getHours());setTimeout(chk,2000);
+setInterval(()=>{glass();chk();const n=new Date(),s=SL(n.getHours()),c=$('#clk');if(c)c.textContent=clk(n);const ed=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);if(pg=='home'&&!ed&&!document.hidden&&(s!=lastSl||n.getMinutes()%10==0)){lastSl=s;draw()}},30000);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 (async()=>{if(window.supabase&&!SB_URL.startsWith('YOUR')){sb=supabase.createClient(SB_URL,SB_KEY);try{const{data}=await sb.auth.getSession();user=data.session&&data.session.user;if(user)await pull()}catch(e){}if(!user)$('#login').classList.add('on')}commit()})();
 </script></body></html>
