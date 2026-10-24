@@ -32,7 +32,6 @@ select,input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--c
 .pips{display:flex;gap:5px;margin:4px 0 10px}.pips i{width:20px;height:20px;border:2px solid var(--ln);border-radius:4px}.pips .f{background:var(--ac3)}
 .days{display:flex;gap:4px;margin:8px 0}.days .btn{flex:1;padding:6px 0;font-size:15px;box-shadow:none}.days .on{background:var(--ac);color:var(--on)}
 .avatar{display:grid;place-items:center;width:96px;height:96px;border-radius:50%;overflow:hidden;border:var(--bw) solid var(--ln);font-size:46px;margin-bottom:10px}.avatar img{width:100%;height:100%;object-fit:cover}
-.ccr{display:flex;gap:12px;align-items:center}.ccr svg{flex:none}.qq{margin-top:12px;padding-top:10px;border-top:2px dashed var(--ln)}
 .wv{animation:wv 2.4s linear infinite}@keyframes wv{to{transform:translateX(40px)}}@media(prefers-reduced-motion:reduce){.wv{animation:none}}
 nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:auto;display:grid;grid-template-columns:1fr 1fr 80px 1fr 1fr;background:var(--bg);border-top:var(--bw) solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
 nav button{background:none;border:0;color:var(--tx);font-size:18px;padding:16px 0 12px}nav .on{box-shadow:inset 0 -4px 0 var(--ac)}
@@ -53,72 +52,48 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const uid=()=>Math.random().toString(36).slice(2,9),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const iso=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,0)+'-'+String(d.getDate()).padStart(2,0)};
 const addD=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return iso(d)},dow=s=>(new Date(s+'T12:00').getDay()+6)%7;
-const PARTS=['morning','afternoon','evening','night'],DN=['M','T','W','T','F','S','S'],ME=['😫','😕','😐','🙂','🔥'],pick1=a=>a[Math.floor(Math.random()*a.length)];
-const cmp=(a,b)=>PARTS.indexOf(a.part)-PARTS.indexOf(b.part)||(a.time||'99').localeCompare(b.time||'99'),tm=s=>{const[a,b]=s.split(':');return a*60+ +b};
+const PARTS=['morning','afternoon','evening','night'],DN=['M','T','W','T','F','S','S'],ME=['😫','😕','😐','🙂','🔥'];
+const cmp=(a,b)=>PARTS.indexOf(a.part)-PARTS.indexOf(b.part)||(a.time||'99').localeCompare(b.time||'99');
 const L=(title,type,days,part,time,size)=>({id:uid(),title,type,days,part,time:time||'',size:size||2});
 const DEF={theme:'comic',chapter:'Finding my feet',bio:'',photo:'',
 areas:[{id:'a1',name:'Money'},{id:'a2',name:'Education'},{id:'a3',name:'Life'},{id:'a4',name:'Skills'}],
-types:[{id:'t1',area:'a1',name:'Job hunt',carry:1},{id:'t2',area:'a2',name:'A/L',carry:1},{id:'t3',area:'a2',name:'Coding',carry:1},{id:'t4',area:'a3',name:'Gym',carry:0},{id:'t5',area:'a3',name:'Health',carry:0},{id:'t6',area:'a4',name:'Daily life',carry:1}],
+types:[{id:'t1',area:'a1',name:'Job hunt'},{id:'t2',area:'a2',name:'A/L'},{id:'t3',area:'a2',name:'Coding'},{id:'t4',area:'a3',name:'Gym'},{id:'t5',area:'a3',name:'Health'},{id:'t6',area:'a4',name:'Daily life'}],
 loop:[L('Job applications','t1',[0,1,2,3,4],'morning'),L('Study coding','t3',[0,1,2,3,4],'afternoon','',2),L('Gym','t4',[0,2,4],'evening','17:00'),L('Cook something new','t6',[5],'afternoon'),L('Tidy my space','t6',[6],'morning',' ',1)],
-items:[],off:[],away:[],water:{},energy:{},log:[],ask:{},qa:{},hyd:{lvl:.6,at:Date.now(),nt:0}};
-let S=JSON.parse(localStorage.getItem('lockin')||'null')||structuredClone(DEF),sb,user,tmr,pg='home',seg='today',msg='',ev=0;S.hyd=S.hyd||{lvl:.6,at:Date.now(),nt:0};S.qa=S.qa||{};
-const ty=id=>S.types.find(x=>x.id==id)||{name:'Other',carry:0},free=d=>S.off.includes(d)||S.away.some(a=>d>=a.f&&d<=a.t),theme=()=>document.documentElement.dataset.theme=S.theme||'comic';
+items:[],off:[],away:[],water:{},log:[],hyd:{lvl:.6,at:Date.now(),nt:0}};
+let S=JSON.parse(localStorage.getItem('lockin')||'null')||structuredClone(DEF),sb,user,tmr,pg='home',seg='today',ev=0;['energy','ask','qa'].forEach(k=>delete S[k]);S.hyd=S.hyd||{lvl:.6,at:Date.now(),nt:0};
+const ty=id=>S.types.find(x=>x.id==id)||{name:'Other'},free=d=>S.off.includes(d)||S.away.some(a=>d>=a.f&&d<=a.t),theme=()=>document.documentElement.dataset.theme=S.theme||'comic';
 function save(){S.ts=Date.now();localStorage.setItem('lockin',JSON.stringify(S));clearTimeout(tmr);tmr=setTimeout(push,800)}
 async function push(){if(!sb||!user)return;try{const{error}=await sb.from('app_state').upsert({user_id:user.id,data:S,updated_at:new Date().toISOString()});const s=$('#sync');if(s)s.textContent=error?'will retry when online':'synced'}catch(e){}}
 async function pull(){const{data}=await sb.from('app_state').select('data').eq('user_id',user.id).maybeSingle();if(data&&data.data&&(data.data.ts||0)>(S.ts||0)){S=Object.assign(structuredClone(DEF),data.data);localStorage.setItem('lockin',JSON.stringify(S))}else push()}
 addEventListener('online',push);
 function ensure(d){if(free(d))return;S.loop.forEach(l=>{if(l.days.includes(dow(d))&&!S.items.some(i=>i.src==l.id&&i.od==d))S.items.push({id:uid(),src:l.id,od:d,date:d,title:l.title,type:l.type,part:l.part,time:(l.time||'').trim(),size:l.size,st:'todo',n:0})})}
 function nextSlot(type,from){for(let k=0;k<60;k++){const d=addD(from,k);if(!free(d)&&S.loop.some(l=>l.type==type&&l.days.includes(dow(d))))return d}}
-function moveNext(x,from){const d=nextSlot(x.type,from);if(d){x.date=d;x.carried=1;x.st='todo'}else x.st='later';x.n++;if(x.n>=3)S.ask[x.id]=1}
-const miss=(x,from)=>ty(x.type).carry?moveNext(x,from):x.st='skip';
+function moveNext(x,from){const d=nextSlot(x.type,from);if(d){x.date=d;x.carried=1;x.st='todo'}else x.st='later';x.n++}
+const miss=x=>{x.st='later';x.n++};
 function fix(){const T=iso();for(let k=0;k<8;k++)ensure(addD(T,k));S.items.forEach(x=>{if(x.date<T&&x.st=='todo')miss(x,T)});S.items=S.items.filter(x=>x.date>=addD(T,-120)||x.st=='todo'||x.st=='later');for(let k=0;k<8;k++)ensure(addD(T,k))}
 const commit=()=>{fix();save();draw()};
-function pick(){const T=iso(),l=S.items.filter(i=>i.date==T&&i.st=='todo').sort(cmp);if(!l.length||free(T))return[null,[]];const e=S.energy[T],now=new Date(),m=now.getHours()*60+now.getMinutes();let n=l.find(i=>i.time&&Math.abs(tm(i.time)-m)<=45)||l[0];if(!l.some(i=>i==n&&i.time&&Math.abs(tm(i.time)-m)<=45)){if(e&&e<=2)n=l.reduce((a,b)=>b.size<a.size?b:a);else if(e>=4)n=l.reduce((a,b)=>b.size>a.size?b:a)}return[n,l.filter(x=>x!=n)]}
-const DR=4*36e5,LOW=.3,SL=h=>h<5?'night':h<11?'morning':h<14?'noon':h<18?'afternoon':h<21?'evening':'night';
+function pick(){const T=iso(),l=S.items.filter(i=>i.date==T&&i.st=='todo').sort(cmp);if(!l.length||free(T))return[null,[]];return[l[0],l.slice(1)]}
+const DR=4*36e5,LOW=.3;
 function awake(a,b){let s=0;for(let t=a;t<b;t+=9e5){const h=new Date(t).getHours();if(h>=7&&h<22)s+=Math.min(9e5,b-t)}return s}
 const lvl=()=>{const a=S.hyd.at;return Math.max(0,S.hyd.lvl-awake(a,Math.min(Date.now(),a+1728e5))/DR)},isAwake=()=>{const h=new Date().getHours();return h>=7&&h<22};
 function notify(t,b){if('Notification'in window&&Notification.permission=='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification(t,{body:b,icon:'icon-180.png',tag:'cc'}))}
 function glass(){const w=$('#wt');if(!w)return;const l=lvl();w.style.transform=`translateY(${(1-l)*108}px)`;$('#wp').textContent=Math.round(l*100)+'%';$('#gsv').style.setProperty('--wc',l<LOW?'#d98a7a':'#7fb7c9');$('#wn').textContent=l<LOW?'Running low. Sip something.':l<.6?'Getting there. A few sips soon.':'Nicely topped up.'}
-function chk(){if(!isAwake()||lvl()>=LOW||Date.now()-S.hyd.nt<36e5)return;S.hyd.nt=Date.now();save();notify('Cee Cee','Your glass is running low, love. Take a few sips?')}
-const OPEN={morning:["Good morning, love.","Morning, you. Sun's up, so are we.","There you are. Morning."],noon:["Midday, love.","Halfway through the day already."],afternoon:["Hey, you.","Afternoon. Still with me?"],evening:["Evening, love.","You made it to the evening."],night:["It's late, love.","Quiet hour. Just us."]};
-const EL=["Rough one. Smallest thing only, okay?","Low battery, so I lightened things.","Steady is fine. One thing at a time.","Good energy. Let's use it gently.","You've got spark. Hardest thing first."];
-const Q={morning:{q:"Did you sleep okay?",a:[["Like a rock",{e:1,r:"Then let's make it count, gently."}],["Okay-ish",{r:"Okay-ish is enough. We'll go steady."}],["Barely",{e:-2,light:1,r:"Oh, love. Small things only today. I lightened it."}]]},
-noon:{q:"Have you eaten something?",a:[["Yes",{r:"Good. Fuel first, always."}],["Not yet",{add:"Eat something proper",r:"Food first. I put it right at the top."}],["Just snacks",{add:"Eat a real meal",r:"Snacks don't count, you. Meal's up next."}]]},
-afternoon:{q:"How's the day going?",a:[["Good",{e:1,r:"Love that. Ride it."}],["Slow",{r:"Slow still moves. Just start the next small bit."}],["Rough",{e:-1,light:1,r:"Okay. Rough days get a smaller list. I took care of it."}]]},
-evening:{q:"How much is left in you?",a:[["Plenty",{e:1,r:"Then one more good thing, and we're done."}],["A little",{r:"A little is fine. One more, then rest."}],["Empty",{e:-2,light:1,r:"Then we stop pushing. I moved the rest forward."}]]},
-night:{q:"Ready to wind down?",a:[["Yes",{r:"Goodnight, love. You did enough today."}],["Soon",{r:"Soon. Screen down in a bit, okay?"}],["Can't switch off",{add:"Write tomorrow's first move",r:"Let's park it on paper. One line, then rest."}]]}};
-const slotKey=()=>iso()+'|'+SL(new Date().getHours());
-function say(){if(msg)return msg;const now=new Date(),h=now.getHours(),m=h*60+now.getMinutes(),T=iso(),up=S.items.filter(i=>i.date==T&&i.st=='todo'&&i.time&&tm(i.time)>m&&tm(i.time)-m<=30).sort(cmp)[0];
-if(up)return`${up.title} is at ${up.time}, in ${tm(up.time)-m} min. Get ready, love.`;
-if(isAwake()&&lvl()<LOW)return"Your glass is nearly empty. Sip first, then the next thing.";
-const qa=S.qa[slotKey()];if(qa)return qa.r;const e=S.energy[T],o=OPEN[SL(h)];return o[(now.getDate()+h)%o.length]+' '+(e?EL[e-1]:'Tell me how your energy is.')}
-function answer(k){const T=iso(),h=new Date().getHours(),r=Q[SL(h)].a[k][1];
-if(r.e)S.energy[T]=Math.max(1,Math.min(5,(S.energy[T]||3)+r.e));
-if(r.light){const n=pick()[0];S.items.filter(x=>x.date==T&&x.st=='todo'&&!x.time&&x.size>1&&x!=n).forEach(x=>miss(x,addD(T,1)))}
-if(r.add&&!S.items.some(x=>x.date==T&&x.title==r.add&&x.st=='todo')){const ct=(S.types.find(t=>t.name=='Health')||S.types[0]).id,p=h<12?'morning':h<17?'afternoon':h<21?'evening':'night';S.items.push({id:uid(),od:T,date:T,title:r.add,type:ct,part:p,time:String(h).padStart(2,0)+':'+String(new Date().getMinutes()).padStart(2,0),size:1,st:'todo',n:0})}
-S.qa[slotKey()]={i:k,r:r.r}}
-const clk=n=>n.toLocaleDateString([],{weekday:'short'})+' '+n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-function AV(sl,e){const bg={morning:'#f4c27a',noon:'#9ec9d6',afternoon:'#e7a36a',evening:'#c987a0',night:'#5a5f9c'}[sl],mo=!e||e==3?'M35 54Q40 57 45 54':e<3?'M35 56Q40 53 45 56':'M34 53Q40 61 46 53',eye=sl=='night'?'<path d="M31 44Q34 46 37 44M43 44Q46 46 49 44" stroke="#1b1b1b" stroke-width="2" fill="none"/>':'<circle cx="34" cy="44" r="2.2" fill="#1b1b1b"/><circle cx="46" cy="44" r="2.2" fill="#1b1b1b"/>';
-return`<svg viewBox="0 0 80 80" width="76" height="76"><circle cx="40" cy="40" r="37" fill="${bg}" style="stroke:var(--ln);stroke-width:3"/><path d="M15 68Q8 22 40 13Q72 22 65 68Z" fill="#1b1b1b"/><ellipse cx="40" cy="44" rx="15" ry="18" fill="#f1d3b8" stroke="#1b1b1b" stroke-width="2.5"/><path d="M24 40Q27 22 42 24Q54 26 56 40Q46 31 24 40Z" fill="#1b1b1b"/>${eye}<circle cx="30" cy="50" r="3" fill="#e58f8f" opacity=".5"/><circle cx="50" cy="50" r="3" fill="#e58f8f" opacity=".5"/><path d="${mo}" stroke="#1b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`}
-function ceeCard(){const now=new Date(),sl=SL(now.getHours()),T=iso(),q=Q[sl];
-return`<div class="panel cc"><span class="cap" id="clk">${clk(now)}</span><div class="ccr">${AV(sl,S.energy[T])}<div><b class="hf">Cee Cee</b><br>${esc(say())}</div></div>${!S.qa[slotKey()]&&!free(T)?`<div class="qq"><b>${q.q}</b><div class="row wrap">${q.a.map((a,i)=>`<button class="btn" data-a="qa" data-i="${i}">${a[0]}</button>`).join('')}</div></div>`:''}</div>`}
+function chk(){if(!isAwake()||lvl()>=LOW||Date.now()-S.hyd.nt<36e5)return;S.hyd.nt=Date.now();save();notify('Lock In','Your glass is running low. Take a few sips?')}
 function waterCard(){const l=lvl(),n=S.water[iso()]||0;
 return`<div class="panel"><span class="cap">WATER</span><div class="row" style="align-items:center"><svg id="gsv" viewBox="0 0 84 116" width="96" style="flex:none;--wc:${l<LOW?'#d98a7a':'#7fb7c9'}"><defs><clipPath id="gc"><path d="M5 5H79L71 111H13Z"/></clipPath></defs><g clip-path="url(#gc)"><g id="wt" style="transform:translateY(${(1-l)*108}px);transition:transform 1s cubic-bezier(.3,1.3,.5,1)"><rect x="-10" y="8" width="104" height="130" fill="var(--wc)"/><path class="wv" d="M-30 8q10 -7 20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0" fill="var(--wc)"/></g></g><path d="M5 5H79L71 111H13Z" fill="none" stroke="var(--ln)" stroke-width="4" stroke-linejoin="round"/></svg><div><div class="hf" style="font-size:34px" id="wp">${Math.round(l*100)}%</div><small id="wn"></small><br><small>${n} glass${n==1?'':'es'} today</small></div></div><div class="row"><button class="btn p" data-a="sip">+ GLASS</button>${'Notification'in window&&Notification.permission=='default'?'<button class="btn g" data-a="notif">REMIND ME</button>':''}</div></div>`}
 const moodRow=(a,v)=>`<div class="moods">${ME.map((m,i)=>`<button data-a="${a}" data-i="${i+1}" class="${v==i+1?'on':''}">${m}</button>`).join('')}</div>`;
-function vHome(){const T=iso(),[n,rest]=pick(),h=new Date().getHours(),w=S.water[T]||0,later=S.items.filter(i=>i.st=='later').length,asks=S.items.filter(i=>S.ask[i.id]&&(i.st=='todo'||i.st=='later'));
-return`<div class="ch">CHAPTER · ${esc(S.chapter)}</div>${ceeCard()}
+function vHome(){const T=iso(),[n,rest]=pick(),h=new Date().getHours(),later=S.items.filter(i=>i.st=='later').length;
+return`<div class="ch">CHAPTER · ${esc(S.chapter)}</div>
 ${free(T)?'<div class="panel"><span class="cap">TODAY</span>This day is set aside. Nothing is due. Rest well.</div>':`<div class="panel"><span class="cap">NEXT</span>${n?`<div class="hf nt">${esc(n.title)}</div><span class="chip">${esc(ty(n.type).name)}</span><span class="chip">${n.time||n.part}</span>${n.carried?'<span class="chip">carried over</span>':''}<div class="row"><button class="btn p" data-a="done" data-i="${n.id}">DONE</button><button class="btn" data-a="later" data-i="${n.id}">LATER</button></div>`:'<div class="hf nt">Nothing left.</div>Rest, or add something small in Plan.'}</div>`}
 ${rest.length?`<div class="panel"><span class="cap">COMING UP</span>${rest.slice(0,3).map(i=>`<div class="rw"><span>${esc(i.title)}</span><em>${i.time||i.part}</em></div>`).join('')}</div>`:''}
-${asks.map(i=>`<div class="panel"><span class="cap">CEE CEE ASKS</span>“${esc(i.title)}” keeps coming back. What do we do with it?<div class="row wrap"><button class="btn" data-a="keep" data-i="${i.id}">KEEP</button><button class="btn" data-a="shrink" data-i="${i.id}">SHRINK</button><button class="btn" data-a="rethink" data-i="${i.id}">RETHINK</button><button class="btn g" data-a="drop" data-i="${i.id}">LET GO</button></div></div>`).join('')}
 ${later&&h>=19?`<div class="panel"><span class="cap">LATER BASKET</span>${later} waiting for a day.<div class="row"><button class="btn" data-a="nav" data-i="later">PLACE THEM</button></div></div>`:''}
-<div class="panel"><span class="cap">ENERGY</span>${moodRow('en',S.energy[T])}</div>
 ${waterCard()}
 ${h>=19&&!S.log.some(l=>l.d==T&&l.k=='Day')?`<div class="panel"><span class="cap">EVENING</span>How did today go?${moodRow('mood',0)}<textarea id="evx" rows="2" placeholder="One line about today (optional)"></textarea><button class="btn p" data-a="evsave">SAVE</button></div>`:''}
 ${free(T)?'':'<button class="btn g wide" data-a="life">Life happened today</button>'}`}
 function vPlan(){const T=iso(),sg=`<div class="seg">${['today','week','areas'].map(s=>`<button class="${seg==s?'on':''}" data-a="seg" data-i="${s}">${s.toUpperCase()}</button>`).join('')}</div>`;
 if(seg=='today')return sg+`<div class="panel"><span class="cap">TODAY</span>${S.items.filter(i=>i.date==T&&i.st!='drop').sort(cmp).map(i=>`<div class="task ${i.st}"><div class="box" data-a="tog" data-i="${i.id}"></div><span data-a="tog" data-i="${i.id}">${esc(i.title)}</span><button class="mini" data-a="edit1" data-i="${i.id}">⋯</button></div>`).join('')||'Nothing today.'}</div><button class="btn wide" data-a="new1">+ ADD A TASK</button>`;
 if(seg=='week')return sg+['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((n,d)=>`<div class="panel"><span class="cap">${n}</span>${S.loop.filter(l=>l.days.includes(d)).sort(cmp).map(l=>`<div class="rw" data-a="editl" data-i="${l.id}"><span>${esc(l.title)}</span><em>${l.time.trim()||l.part}</em></div>`).join('')||'<small>free</small>'}</div>`).join('')+`<button class="btn wide" data-a="newl">+ ADD TO THE LOOP</button><div class="panel"><span class="cap">AWAY</span>${S.away.map((a,i)=>`<div class="rw"><span>${a.f} → ${a.t}</span><button class="mini" data-a="rmaway" data-i="${i}">✕</button></div>`).join('')}<div class="row"><input type="date" id="af" min="${T}"><input type="date" id="at" min="${T}"></div><button class="btn wide" style="margin:12px 0 0" data-a="away">SET AWAY</button></div>`;
-return sg+S.areas.map(a=>`<div class="panel"><span class="cap">${esc(a.name)}</span>${S.types.filter(t=>t.area==a.id).map(t=>`<div class="rw"><span>${esc(t.name)}</span><span><button class="mini ${t.carry?'on':''}" data-a="carry" data-i="${t.id}">${t.carry?'carries over':'lets go'}</button><button class="mini" data-a="rnt" data-i="${t.id}">✎</button><button class="mini" data-a="rmt" data-i="${t.id}">✕</button></span></div>`).join('')}<div class="row"><button class="btn" data-a="newt" data-i="${a.id}">+ TYPE</button><button class="btn g" data-a="rna" data-i="${a.id}">RENAME</button></div></div>`).join('')+'<button class="btn wide" data-a="newa">+ NEW AREA</button>'}
+return sg+S.areas.map(a=>`<div class="panel"><span class="cap">${esc(a.name)}</span>${S.types.filter(t=>t.area==a.id).map(t=>`<div class="rw"><span>${esc(t.name)}</span><span><button class="mini" data-a="rnt" data-i="${t.id}">✎</button><button class="mini" data-a="rmt" data-i="${t.id}">✕</button></span></div>`).join('')}<div class="row"><button class="btn" data-a="newt" data-i="${a.id}">+ TYPE</button><button class="btn g" data-a="rna" data-i="${a.id}">RENAME</button></div></div>`).join('')+'<button class="btn wide" data-a="newa">+ NEW AREA</button>'}
 function vLater(){const l=S.items.filter(i=>i.st=='later');return'<h2>Later</h2>'+(l.map(i=>`<div class="panel"><span class="cap">${esc(ty(i.type).name)}</span>${esc(i.title)} <small>· pushed ${i.n}×</small><div class="row"><input type="date" id="d_${i.id}" min="${iso()}" value="${addD(iso(),1)}"><button class="btn p" data-a="place" data-i="${i.id}">PLACE</button></div><div class="row"><button class="btn" data-a="slot" data-i="${i.id}">NEXT SLOT</button><button class="btn g" data-a="drop" data-i="${i.id}">LET GO</button></div></div>`).join('')||'<div class="panel">The basket is empty.</div>')}
 const vLog=()=>`<h2>The Log</h2><div class="panel"><select id="lk"><option>Note</option><option>Win</option><option>Reminder</option></select><textarea id="lx" rows="2" placeholder="What's on your mind?"></textarea><button class="btn p" data-a="logsave">SAVE</button></div>`+S.log.map(l=>`<div class="panel"><span class="cap">${l.k=='Day'?'DAY '+(ME[l.m-1]||''):esc(l.k)}</span><small>${l.d}</small><br>${esc(l.x||'')}</div>`).join('');
 function vMe(){const w=S.items.filter(i=>i.st=='done'&&i.date>addD(iso(),-7));return`<h2>Me</h2><div class="panel"><span class="cap">MY BOOK</span><label class="avatar">${S.photo?`<img src="${S.photo}">`:'😎'}<input type="file" id="photo" accept="image/*" hidden></label><input id="chap" value="${esc(S.chapter)}" placeholder="Current chapter"><textarea id="bio" rows="3" placeholder="About me">${esc(S.bio)}</textarea></div><div class="panel"><span class="cap">THIS WEEK I…</span>${w.map(i=>`<div>✓ ${esc(i.title)}</div>`).join('')||'<small>Nothing yet. That is fine.</small>'}</div><div class="panel"><span class="cap">LOOK</span><select id="theme">${[['comic','Comic'],['comicdark','Comic dark'],['min','Minimal light'],['mindark','Minimal dark']].map(([v,n])=>`<option value="${v}" ${S.theme==v?'selected':''}>${n}</option>`).join('')}</select><small id="sync">${user?'signed in':'local only'}</small>${user?'<div class="row"><button class="btn g" data-a="out">SIGN OUT</button></div>':''}</div>`}
@@ -133,32 +108,27 @@ if(isL){v.days=$$('.days .on').map(b=>+b.dataset.d);if(!v.days.length)return;if(
 else{v.date=$('#f_d').value||T;if(o.id)Object.assign(o,v);else S.items.push({id:uid(),od:v.date,st:'todo',n:0,...v})}close();commit()}}
 function act(a,i,b){const T=iso(),it=S.items.find(x=>x.id==i),ar=S.areas.find(x=>x.id==i),tp=S.types.find(x=>x.id==i);
 switch(a){
-case'nav':pg=i;msg='';scrollTo(0,0);break;
-case'seg':seg=i;break;case'qa':msg='';answer(+i);break;case'notif':Notification.requestPermission().then(draw);return;
-case'done':it.st='done';msg=pick1(['Nice. That counts.','One less thing. Breathe.','Good. Small wins are real.']);break;
-case'later':it.st='later';it.n++;if(it.n>=3)S.ask[i]=1;msg='Parked in Later. On to the next.';break;
-case'en':S.energy[T]=+i;msg='';break;
+case'nav':pg=i;scrollTo(0,0);break;
+case'seg':seg=i;break;case'notif':Notification.requestPermission().then(draw);return;
+case'done':it.st='done';break;
+case'later':it.st='later';it.n++;break;
 case'sip':S.hyd={lvl:Math.min(1,lvl()+.5),at:Date.now(),nt:0};S.water[T]=(S.water[T]||0)+1;break;
-case'life':S.off.push(T);S.items.filter(x=>x.date==T&&x.st=='todo').forEach(x=>miss(x,addD(T,1)));msg="Today is yours. I moved things along gently.";break;
-case'keep':it.n=0;delete S.ask[i];break;
-case'shrink':{const t=prompt('Make it smaller. New wording:',it.title);if(t){it.title=t;it.size=1;it.n=0;delete S.ask[i]}break}
-case'rethink':sheet(it,'one');return;
-case'drop':it.st='drop';delete S.ask[i];break;
+case'life':S.off.push(T);S.items.filter(x=>x.date==T&&x.st=='todo').forEach(x=>miss(x,addD(T,1)));break;
+case'drop':it.st='drop';break;
 case'tog':it.st=it.st=='done'?'todo':'done';break;
 case'place':{const d=$('#d_'+i).value;if(d){it.date=d;it.st='todo';it.carried=1}break}
 case'slot':moveNext(it,addD(T,1));break;
 case'new1':sheet({date:T,part:'morning'},'one');return;case'edit1':sheet(it,'one');return;
 case'newl':sheet({days:[0,1,2,3,4],part:'morning'},'loop');return;case'editl':sheet(S.loop.find(x=>x.id==i),'loop');return;
-case'carry':tp.carry=tp.carry?0:1;break;
 case'rnt':{const n=prompt('Rename type',tp.name);if(n)tp.name=n;break}
 case'rmt':if(confirm('Remove this type?'))S.types=S.types.filter(x=>x!=tp);break;
-case'newt':{const n=prompt('New type name');if(n)S.types.push({id:uid(),area:i,name:n,carry:1});break}
+case'newt':{const n=prompt('New type name');if(n)S.types.push({id:uid(),area:i,name:n});break}
 case'rna':{const n=prompt('Rename area',ar.name);if(n)ar.name=n;break}
 case'newa':{const n=prompt('New area name');if(n)S.areas.push({id:uid(),name:n});break}
 case'away':{const f=$('#af').value,t=$('#at').value;if(!f||!t||t<f)return;S.away.push({f,t});S.items.filter(x=>x.date>=f&&x.date<=t&&x.st=='todo').forEach(x=>miss(x,addD(t,1)));break}
 case'rmaway':S.away.splice(+i,1);break;
 case'mood':ev=+i;$$('[data-a=mood]').forEach(x=>x.classList.toggle('on',x.dataset.i==i));return;
-case'evsave':S.log.unshift({d:T,k:'Day',m:ev,x:$('#evx').value.trim()});msg='Thank you for telling me. Rest now.';break;
+case'evsave':S.log.unshift({d:T,k:'Day',m:ev,x:$('#evx').value.trim()});break;
 case'logsave':{const x=$('#lx').value.trim();if(!x)return;S.log.unshift({d:T,k:$('#lk').value,x});break}
 case'out':sb.auth.signOut();user=null;$('#login').classList.add('on');return}
 commit()}
@@ -167,8 +137,8 @@ document.addEventListener('change',e=>{const i=e.target.id;if(i=='chap')S.chapte
 $('#li').onclick=async()=>{const{data,error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#pw').value});if(error)return $('#lerr').textContent=error.message;user=data.user;$('#login').classList.remove('on');try{await pull()}catch(e){}commit()};
 $('#skip').onclick=()=>$('#login').classList.remove('on');
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){commit();chk()}});
-let lastSl=SL(new Date().getHours());setTimeout(chk,2000);
-setInterval(()=>{glass();chk();const n=new Date(),s=SL(n.getHours()),c=$('#clk');if(c)c.textContent=clk(n);const ed=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);if(pg=='home'&&!ed&&!document.hidden&&(s!=lastSl||n.getMinutes()%10==0)){lastSl=s;draw()}},30000);
+let lastH=new Date().getHours();setTimeout(chk,2000);
+setInterval(()=>{glass();chk();const h=new Date().getHours(),ed=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);if(h!=lastH&&pg=='home'&&!ed&&!document.hidden)draw();lastH=h},30000);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 (async()=>{if(window.supabase&&!SB_URL.startsWith('YOUR')){sb=supabase.createClient(SB_URL,SB_KEY);try{const{data}=await sb.auth.getSession();user=data.session&&data.session.user;if(user)await pull()}catch(e){}if(!user)$('#login').classList.add('on')}commit()})();
 </script></body></html>
