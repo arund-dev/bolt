@@ -47,7 +47,7 @@ nav button{background:none;border:0;color:var(--tx);font-size:18px;padding:16px 
 <div id="login"><div class="panel" style="width:100%;max-width:360px"><h2>Lock In</h2><input id="em" type="email" placeholder="email" autocomplete="username"><input id="pw" type="password" placeholder="password" autocomplete="current-password"><small id="lerr"></small><div class="row"><button class="btn g" id="skip">OFFLINE</button><button class="btn p" id="li">ENTER</button></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const SB_URL='YOUR_SUPABASE_URL',SB_KEY='YOUR_SUPABASE_ANON_KEY';
+const SB_URL='https://wobbputochvovpzwpcdr.supabase.co',SB_KEY='sb_publishable_AlPqPnlC28-XTpFXhSRpAA_JI_Jz5IP';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const uid=()=>Math.random().toString(36).slice(2,9),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const iso=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,0)+'-'+String(d.getDate()).padStart(2,0)};
